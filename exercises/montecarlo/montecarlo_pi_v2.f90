@@ -10,11 +10,15 @@ program montecarlo_pi_v2
   pi_true=acos(-1.d0)
   countin=0
   random_last=0
+  !$omp parallel private(i,x,y) firstprivate(random_last)
+  !$omp do reduction(+: countin)
   do i=1,npoints
      call LCG_random(x,random_last)
      call LCG_random(y,random_last)
      if(x*x+y*y.le.1.d0)countin=countin+1
   enddo
+  !$omp end do
+  !$omp end parallel
 
   pi=dble(countin)/dble(npoints)*4.d0
 

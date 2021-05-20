@@ -11,10 +11,14 @@ program pi_serial
   dx=1.d0/dble(steps)
   sum=0.d0
 
+  !$omp parallel private (i, x) shared(dx)
+  !$omp do reduction(+: sum)
   do i=1,steps
      x=(dble(i)-.5d0)*dx
      sum=sum+4.d0/(1.d0+x*x)
   enddo
+  !$omp end do
+  !$omp end parallel
 
   sum=sum*dx
 

@@ -11,6 +11,8 @@ program mandelbrot_area
   numoutside=0
 
   print *,eps,numoutside
+  !$omp parallel private(rp, ri, i, j)
+  !$omp do collapse(2) reduction(+:numoutside) schedule(guided)
   do i=1,npoints
      do j=1,npoints
         rp=-2.d0+2.5d0*dble(i)/dble(npoints)+eps
@@ -18,6 +20,9 @@ program mandelbrot_area
         call testpoint(rp,ri,numoutside,mxitr)
      enddo
   enddo
+  !$omp end do
+  !$omp end parallel
+
   area=2.d0*2.5d0*1.125d0*dble(npoints*npoints-numoutside)/dble(npoints*npoints)
   error=area/dble(npoints)
 
